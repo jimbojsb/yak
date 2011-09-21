@@ -10,9 +10,7 @@ class Up extends Base
     protected function configure()
     {
         $this->setName('up')
-             ->setDescription('upgrades your database schema to the latest version available')
-             ->setDefinition(array(new InputArgument('config', InputArgument::OPTIONAL, 'ini config file')),
-                                   new InputArgument('migrations_path', InputArgument::OPTIONAL, 'path to sql migration scripts', '.'));
+             ->setDescription('upgrades your database schema to the latest version available');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
