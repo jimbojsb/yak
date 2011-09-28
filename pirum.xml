@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<server>
-<name>jimbojsb.github.com/yak</name>
-<summary>Yak's PEAR Channel Server</summary>
-<alias>yak</alias>
-<url>http://jimbojsb.github.com/yak</url>
-</server>
