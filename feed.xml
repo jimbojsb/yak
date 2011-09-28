@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://jimbojsb.github.com/yak">
+    <title>Yak's PEAR Channel Server Latest Releases</title>
+    <link href="http://jimbojsb.github.com/yak" />
+    <author>
+        <name>http://jimbojsb.github.com/yak</name>
+    </author>
+
+
+</feed>
