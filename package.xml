@@ -29,7 +29,7 @@ First release
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
-   <file baseinstalldir="/" md5sum="71217bcab4b45ec66e2a6355429aeeee" name="Yak.phar" as="yak" role="script" />
+   <file baseinstalldir="/" md5sum="71217bcab4b45ec66e2a6355429aeeee" name="Yak.phar" role="script" />
   </dir>
  </contents>
  <dependencies>
