@@ -1,5 +1,5 @@
 <?php
-    $phar = new Phar(__DIR__ . '/../hegira.phar');
+    $phar = new Phar(__DIR__ . '/../Yak.phar');
     $phar->buildFromDirectory(__DIR__ . '/../lib');
 
     $runFile = implode(PHP_EOL, array_slice(file(__DIR__ . '/run.php'), 2));

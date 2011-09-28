@@ -1,5 +1,5 @@
 <?php
-namespace Hegira\Command;
+namespace Yak\Command;
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,

@@ -1,5 +1,5 @@
 <?php
-namespace Hegira\Command;
+namespace Yak\Command;
 use Symfony\Component\Console\Command\Command;
 class Base extends Command
 {
@@ -11,12 +11,12 @@ class Base extends Command
         if ($this->config) {
             return $this->config;
         }
-        if (file_exists('hegira_config.php')) {
-            $config = include('hegira_config.php');
+        if (file_exists('yak_config.php')) {
+            $config = include('yak_config.php');
             $this->config = $config[$this->getEnvironment()];;
             return $this->config;
         } else {
-            throw new \Exception('hegira_config.php not found in current path');
+            throw new \Exception('Yak_config.php not found in current path');
         }
     }
 
@@ -69,7 +69,7 @@ class Base extends Command
     protected function createVersionTable()
     {
         $pdo = $this->getPdo();
-        $sql = "CREATE TABLE `hegira_version` (
+        $sql = "CREATE TABLE `Yak_version` (
                     `version` int(11) NOT NULL DEFAULT '0',
                     `description` varchar(64) NOT NULL,
                     `checksum` char(40) NOT NULL,
@@ -86,7 +86,7 @@ class Base extends Command
     {
         $this->createVersionTable();
         $pdo = $this->getPdo();
-        $sql = "SELECT MAX(version) AS version FROM hegira_version";
+        $sql = "SELECT MAX(version) AS version FROM Yak_version";
         $stmt = $pdo->query($sql);
         $version = $stmt->fetchColumn();
         return $version ?: 0;

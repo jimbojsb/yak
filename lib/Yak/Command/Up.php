@@ -1,5 +1,5 @@
 <?php
-namespace Hegira\Command;
+namespace Yak\Command;
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
@@ -39,7 +39,7 @@ class Up extends Base
                     $description = $data['description'];
                     $output->writeln("<info>Applying $c: $description...</info>");
                     $date = date("YmdHis");
-                    $sql = "INSERT INTO hegira_version
+                    $sql = "INSERT INTO Yak_version
                             VALUES ('$c', '$description', '$checksum', '$date')";
                     $stmt = $pdo->query($sql);
                     if ($stmt) {
