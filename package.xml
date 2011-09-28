@@ -42,7 +42,11 @@ First release
    </pearinstaller>
   </required>
  </dependencies>
- <phprelease />
+ <phprelease>
+     <filelist>
+         <install as="yak" name="yak.phar"/>
+     </filelist>
+ </phprelease>
  <changelog>
   <release>
    <version>
