@@ -44,7 +44,7 @@ First release
  </dependencies>
  <phprelease>
      <filelist>
-         <install as="yak" name="yak.phar"/>
+         <install as="yak" name="Yak.phar"/>
      </filelist>
  </phprelease>
  <changelog>
