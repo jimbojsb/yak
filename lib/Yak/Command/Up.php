@@ -43,7 +43,7 @@ class Up extends Base
                     $description = $data['description'];
                     $output->writeln("<info>Applying $c: $description...</info>");
                     $date = date("YmdHis");
-                    $sql = "INSERT INTO Yak_version
+                    $sql = "INSERT INTO yak_version
                             VALUES ('$c', '$description', '$checksum', '$date')";
                     $stmt = $pdo->query($sql);
                     if ($stmt) {
