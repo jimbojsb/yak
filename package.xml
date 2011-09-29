@@ -13,10 +13,10 @@
   <email>josh@joshbutts.com</email>
   <active>yes</active>
  </lead>
- <date>2011-09-28</date>
+ <date>2011-09-29</date>
  <time>16:53:19</time>
  <version>
-  <release>0.1.0</release>
+  <release>0.1.1</release>
   <api>0.1.0</api>
  </version>
  <stability>
@@ -25,7 +25,7 @@
  </stability>
  <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
  <notes>
-First release
+bug fixes
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -50,17 +50,17 @@ First release
  <changelog>
   <release>
    <version>
-    <release>0.1</release>
+    <release>0.1.1</release>
     <api>0.1</api>
    </version>
    <stability>
     <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2011-09-28</date>
+   <date>2011-09-29</date>
    <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
    <notes>
-First release
+bug fixes
    </notes>
   </release>
  </changelog>
