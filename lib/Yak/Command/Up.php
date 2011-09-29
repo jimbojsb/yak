@@ -17,6 +17,10 @@ class Up extends Base
     {
         $this->createVersionTable();
         $migrations = $this->getMigrations();
+        if (!$migrations) {
+            $output->writeln('No migration files found.');
+            return;
+        }
 
         $currentVersion = $this->getCurrentVersion();
         $output->writeln("<info>Current version is: $currentVersion</info>");

@@ -16,7 +16,7 @@ class Base extends Command
             $this->config = $config[$this->getEnvironment()];;
             return $this->config;
         } else {
-            throw new \Exception('Yak_config.php not found in current path');
+            throw new \Exception('yak_config.php not found in current path');
         }
     }
 
@@ -39,9 +39,14 @@ class Base extends Command
     {
         $migrations = array();
         $dir = "./migrations";
-        $d = new \DirectoryIterator($dir);
+        try {
+            $d = new \DirectoryIterator($dir);
+        } catch (\Exception $e) {
+            return $migrations;
+        }
+        
         foreach ($d as $file) {
-            if (!$d->isDir() && !$d->isDot()) {
+            if ($file->isFile()) {
                 $fileName = $file->getPathname();
                 $nameParts = explode('.', $file->getFilename());
                 $version = $nameParts[0];
@@ -61,15 +66,16 @@ class Base extends Command
                                               "up"          => $up,
                                               "down"        => $down,
                                               "checksum"    => sha1($contents));
-                return $migrations;
+
             }
         }
+        return $migrations;
     }
 
     protected function createVersionTable()
     {
         $pdo = $this->getPdo();
-        $sql = "CREATE TABLE `Yak_version` (
+        $sql = "CREATE TABLE IF NOT EXISTS `yak_version` (
                     `version` int(11) NOT NULL DEFAULT '0',
                     `description` varchar(64) NOT NULL,
                     `checksum` char(40) NOT NULL,
@@ -86,7 +92,7 @@ class Base extends Command
     {
         $this->createVersionTable();
         $pdo = $this->getPdo();
-        $sql = "SELECT MAX(version) AS version FROM Yak_version";
+        $sql = "SELECT MAX(version) AS version FROM yak_version";
         $stmt = $pdo->query($sql);
         $version = $stmt->fetchColumn();
         return $version ?: 0;
