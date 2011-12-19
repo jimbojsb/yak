@@ -8,7 +8,8 @@ class Yak extends Application
     {
         parent::__construct('Yak Database Migrations', '1.0');
         $this->addCommands(array(new \Yak\Command\Up(),
-                                 new \Yak\Command\Clear()));
+                                 new \Yak\Command\Clear(),
+                                 new \Yak\Command\Execute()));
     }
 }
 

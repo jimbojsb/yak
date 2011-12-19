@@ -10,47 +10,34 @@ class Execute extends Base
     protected function configure()
     {
         $this->setName('execute')
-             ->setDescription('execute a folder full of sql files');
+             ->setDescription('executes a single SQL script or a folder full of scripts')
+             ->addArgument('path', InputArgument::OPTIONAL, 'Path to SQL script or directory');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->createVersionTable();
-        $migrations = $this->getMigrations();
-        if (!$migrations) {
-            $output->writeln('No migration files found.');
-            return;
+        $path = $input->getArgument('path');
+        if (!$path) {
+            $path = realpath(getcwd());
         }
 
-        $currentVersion = $this->getCurrentVersion();
-        $output->writeln("<info>Current version is: $currentVersion</info>");
-
-        $versionNumbers = array_keys($migrations);
-        $maxVersion = max($versionNumbers);
-        $output->writeln("<info>Max version is: $maxVersion</info>");
-
-        if ($maxVersion == $currentVersion) {
-            $output->writeln("<info>Nothing to do.</info>");
-        } else {
-            $pdo = $this->getPdo();
-            for ($c = $currentVersion + 1; $c <= $maxVersion; $c++) {
-                $data = $migrations[$c];
-                $stmt = $pdo->query($data['up']);
-                if ($stmt) {
-                    $stmt->closeCursor();
-                    unset($stmt);
-                    $checksum = $data['checksum'];
-                    $description = $data['description'];
-                    $output->writeln("<info>Applying $c: $description...</info>");
-                    $date = date("YmdHis");
-                    $sql = "INSERT INTO yak_version
-                            VALUES ('$c', '$description', '$checksum', '$date')";
-                    $stmt = $pdo->query($sql);
-                    if ($stmt) {
-                        $stmt->closeCursor();
-                    }
+        $files = array();
+        if (is_dir($path)) {
+            $di = new \DirectoryIterator($path);
+            foreach ($di as $file) {
+                if ($file->isFile()) {
+                    $files[] = $file->getPathname();
                 }
             }
+        } else {
+            $files[] = $path;
+        }
+
+        $output->writeln('<info>Found ' . count($files) . ' files to execute:</info>');
+        $pdo = $this->getPdo();
+        foreach ($files as $file) {
+            $pdo->query(file_get_contents($file));
+            $output->writeln('<info>Executed ' . $file . '</info>');
         }
     }
 }
