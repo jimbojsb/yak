@@ -36,8 +36,19 @@ class Execute extends Base
         $output->writeln('<info>Found ' . count($files) . ' files to execute:</info>');
         $pdo = $this->getPdo();
         foreach ($files as $file) {
-            $pdo->query(file_get_contents($file));
-            $output->writeln('<info>Executed ' . $file . '</info>');
+            $result = $pdo->query(file_get_contents($file));
+            if (!$result) {
+                $output->writeln("<error>Encountered an error running $file</error>");
+                $errorMessages = $pdo->errorInfo();
+                foreach ($errorMessages as $message) {
+                    $output->writeln("<error>\t$message</error>");
+                }
+
+            } else {
+                $result->closeCursor();
+                $output->writeln('<info>Executed ' . $file . '</info>');
+            }
+
         }
     }
 }
