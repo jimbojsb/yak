@@ -6,7 +6,7 @@ class Yak extends Application
     protected $config;
     public function __construct()
     {
-        parent::__construct('Yak Database Migrations', '1.0');
+        parent::__construct('Yak Database Migrations', '0.2');
         $this->addCommands(array(new \Yak\Command\Up(),
                                  new \Yak\Command\Clear(),
                                  new \Yak\Command\Execute(),
