@@ -16,6 +16,8 @@ class Execute extends Base
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setIntput($input);
+
         $path = $input->getArgument('path');
         if (!$path) {
             $path = realpath(getcwd());

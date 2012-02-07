@@ -10,11 +10,14 @@ class Up extends Base
     protected function configure()
     {
         $this->setName('up')
-             ->setDescription('upgrades your database schema to the latest version available');
+             ->setDescription('upgrades your database schema to the latest version available')
+             ->addArgument('version', InputArgument::OPTIONAL, 'set a specific version number to upgrade to');;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setIntput($input);
+
         $this->createVersionTable();
         $migrations = $this->getMigrations();
         if (!$migrations) {
@@ -26,14 +29,23 @@ class Up extends Base
         $output->writeln("<info>Current version is: $currentVersion</info>");
 
         $versionNumbers = array_keys($migrations);
-        $maxVersion = max($versionNumbers);
-        $output->writeln("<info>Max version is: $maxVersion</info>");
+        $specifiedVersion = $input->getArgument('version');
+        if ($specifiedVersion) {
+            $output->writeln("<info>Upgrading to: $specifiedVersion</info>");
+            $upgradeVersion = $specifiedVersion;
+        } else {
+            $maxVersion = max($versionNumbers);
+            $output->writeln("<info>Upgrading to: latest ($maxVersion)</info>");
+            $upgradeVersion = $maxVersion;
+        }
 
-        if ($maxVersion == $currentVersion) {
+
+
+        if ($upgradeVersion == $currentVersion) {
             $output->writeln("<info>Nothing to do.</info>");
         } else {
             $pdo = $this->getPdo();
-            for ($c = $currentVersion + 1; $c <= $maxVersion; $c++) {
+            for ($c = $currentVersion + 1; $c <= $upgradeVersion; $c++) {
                 $data = $migrations[$c];
                 $stmt = $pdo->query($data['up']);
                 if ($stmt) {
