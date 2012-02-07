@@ -15,6 +15,7 @@ class Clear extends Base
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setIntput($input);
         $output->writeln('<info>Clearing your database...</info>');
         $pdo = $this->getPdo();
         $pdo->query("SET FOREIGN_KEY_CHECKS=0");

@@ -1,23 +1,56 @@
 <?php
 namespace Yak\Command;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\Command,
+    Symfony\Component\Console\Input\InputArgument,
+    Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console\Input\InputInterface,
+    Symfony\Component\Console\Output\OutputInterface;
 class Base extends Command
 {
     protected $pdo;
     protected $config;
+    protected $input;
+
+    public function __construct($name = null)
+    {
+        parent::__construct($name);
+        $this->addOption('host', 'l', InputOption::VALUE_NONE, 'hostname of mysql server');
+        $this->addOption('username', 'u', InputOption::VALUE_OPTIONAL, 'mysql username');
+        $this->addOption('password', 'p', InputOption::VALUE_OPTIONAL, 'mysql password');
+        $this->addOption('database', 'd', InputOption::VALUE_OPTIONAL, 'database name');
+        $this->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'database name');
+    }
+
+    protected function setIntput(InputInterface $input)
+    {
+        $this->input = $input;
+    }
 
     protected function getConfig()
     {
         if ($this->config) {
             return $this->config;
         }
-        if (file_exists('yak_config.php')) {
-            $config = include('yak_config.php');
-            $this->config = $config[$this->getEnvironment()];;
-            return $this->config;
-        } else {
-            throw new \Exception('yak_config.php not found in current path');
+
+        $configOptions = array();
+
+        $configFile = $this->input->getOption('config') ?: 'yak_config.php';
+        if (file_exists($configFile)) {
+            $configFileOptions = include($configFile);
+            $configOptions = $configFileOptions[$this->getEnvironment()];
         }
+
+        $configOptions["host"] = $this->input->getOption('host') ?: $configOptions["host"];
+        $configOptions["username"] = $this->input->getOption('username') ?: $configOptions["username"];
+        $configOptions["password"] = $this->input->getOption('password') ?: $configOptions["password"];
+        $configOptions["dbname"] = $this->input->getOption('database') ?: $configOptions["dbname"];
+
+        if (!(isset($configOptions["host"]) && isset($configOptions["username"]) && isset($configOptions["password"]) && isset($configOptions["dbname"]))) {
+            throw new \InvalidArgumentException("Missing config params. Either specify them as options or specify a yak_config.php");
+        }
+
+        $this->config = $configOptions;
+        return $this->config;
     }
 
     /**
