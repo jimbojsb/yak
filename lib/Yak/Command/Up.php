@@ -62,7 +62,7 @@ class Up extends Base
                         $stmt->closeCursor();
                     }
                 } else {
-                    throw new \Exception($pdo->errorInfo());
+                    throw new \Exception(print_r($pdo->errorInfo(), true));
                 }
             }
         }
