@@ -61,6 +61,8 @@ class Up extends Base
                     if ($stmt) {
                         $stmt->closeCursor();
                     }
+                } else {
+                    throw new \Exception($pdo->errorInfo());
                 }
             }
         }
