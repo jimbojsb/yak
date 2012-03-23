@@ -35,7 +35,29 @@ class Execute extends Base
             $files[] = $path;
         }
 
+        // detect if the files are numbered
+        $numbered = true;
+        $numberedFiles = array();
+        array_walk($files, function($item) use (&$numbered, &$numberedFiles) {
+            $hasLeadingNumber = preg_match('`.*?([0-9]+)\.?(.*?)\.sql`', $item, $matches);
+            if ($hasLeadingNumber) {
+                $numberedFiles[$matches[1]] = $item;
+            } else {
+                $numbered = false;
+            }
+        });
+
         $output->writeln('<info>Found ' . count($files) . ' files to execute:</info>');
+        if ($numbered) {
+            $output->writeln("<info>These files look numbered, attempting to run them in order...</info>");
+            ksort($numberedFiles);
+            $files = array_values($numberedFiles);
+        } else {
+            sort($files);
+        }
+
+
+
         $pdo = $this->getPdo();
         foreach ($files as $file) {
             $result = $pdo->query(file_get_contents($file));
