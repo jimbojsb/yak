@@ -8,9 +8,7 @@ Yak is distributed as an excutable Phar file with all of it's dependencies bundl
 "update-yak" command can keep you up to date. To get your initial install, run the following command in the folder
 where you'd like Yak to be installed (I recommend /usr/local/bin):
 
-1. cd /usr/local/bin
-2. wget https://github.com/downloads/jimbojsb/yak/yak
-3. chmod +x yak
+    curl https://raw.github.com/jimbojsb/yak/master/bin/installer.php | php
 
 Usage
 =====
