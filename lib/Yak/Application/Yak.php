@@ -10,7 +10,7 @@ class Yak extends Application
 
     public function __construct()
     {
-        parent::__construct('Yak Database Migrations', '0.3');
+        parent::__construct('Yak Database Migrations', '0.3.1');
 
         $this->addCommands(
             array(
@@ -18,7 +18,8 @@ class Yak extends Application
                 new \Yak\Command\Migration\Down(),
                 new \Yak\Command\Utility\Clear(),
                 new \Yak\Command\Utility\Execute(),
-                new \Yak\Command\DataTransfer\Transfer()
+                new \Yak\Command\DataTransfer\Transfer(),
+                new \Yak\Command\UpdateYak()
             )
         );
     }
