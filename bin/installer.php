@@ -16,6 +16,5 @@ foreach ($downloads as $download) {
 $versionNumbers = array_keys($versions);
 sort($versionNumbers);
 $maxAvailableVersion = array_pop($versionNumbers);
-$output->writeln("<info>Upgrading from $currentVersion to $maxAvailableVersion</info>");
-copy($versions[$maxAvailableVersion], dirname($_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'yak');
-chmod(dirname($_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'yak', 0755);
+copy($versions[$maxAvailableVersion], getcwd() . DIRECTORY_SEPARATOR . 'yak');
+chmod(getcwd() . DIRECTORY_SEPARATOR . 'yak', 0755);
