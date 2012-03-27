@@ -42,7 +42,13 @@ class Transfer extends AbstractDataTransfer
         }
 
         $output->writeln('<info>Found ' . count($transferConfig["tables"]) . ' tables to transfer</info>');
-        foreach ($transferConfig["tables"] as $table) {
+        foreach ($transferConfig["tables"] as $table => $params) {
+
+            if (is_int($table)) {
+                $table = $transferConfig["tables"][$table];
+                $params = array();
+            }
+
             $output->writeln('<info>Transferring ' . $table . '</info>');
             $sourceTable = $sourceConnection->query("DESCRIBE $table");
             if ($sourceTable) {
@@ -51,26 +57,31 @@ class Transfer extends AbstractDataTransfer
                     $sourceTableSchema[] = $row;
                 }
             } else {
-                $output->writeln('<error>Skipping table: `' . $table . ' - source table does not exist`</error>');
+                $output->writeln('<error>Skipping table: `' . $table . '` - source table does not exist</error>');
                 continue;
             }
 
-            $destinationTable = $destinationConnection->query("DESCRIBE $table");
+            $realDestinationTable = ($params["destination_table"] ?: $table);
+            $destinationTable = $destinationConnection->query("DESCRIBE $realDestinationTable");
             if ($destinationTable) {
                 $destinationTableSchema = array();
                 while ($row = $destinationTable->fetch(\PDO::FETCH_ASSOC)) {
                     $destinationTableSchema[] = $row;
                 }
             } else {
-                $output->writeln('<error>Skipping table: `' . $table . ' - destination table does not exist`</error>');
+                $output->writeln('<error>Skipping table: `' . $table . '` - destination table does not exist`</error>');
                 continue;
             }
 
             $columnsToTransfer = array();
             foreach ($sourceTableSchema as $srcColumn) {
+                if (is_array($params["column_exclude"]) && in_array($srcColumn["Field"], $params["column_exclude"])) {
+                    continue;
+                }
                 $foundColumn = false;
                 foreach ($destinationTableSchema as $destinationColumn) {
-                    if ($srcColumn["Field"] === $destinationColumn["Field"]) {
+                    $realDestinationColumn = $params["column_map"][$srcColumn["Field"]] ?: $srcColumn['Field'];
+                    if ($realDestinationColumn === $destinationColumn["Field"]) {
                         if ($srcColumn["Type"] !== $destinationColumn["Type"]) {
                             $output->writeln('<comment>--- Definition mismatch: `' . $srcColumn['Field'] . '` - source is ' . $srcColumn['Type'] . ' and destination is ' . $destinationColumn['Type'] . '. Continuing anyway...</comment>');
                         }
@@ -88,17 +99,22 @@ class Transfer extends AbstractDataTransfer
             $destinationConnection->query("ALTER TABLE $table DISABLE KEYS");
 
 
-            $cols = array();
+            $selectCols = array();
+            $insertCols = array();
             foreach ($columnsToTransfer as $col) {
-                $cols[] = "`" . $col["Field"] . "`";
+                $selectCols[] = "`" . $col["Field"] . "`";
+                $insertCols[] = "`" . ($params["column_map"][$col["Field"]] ?: $col["Field"]) . "`";
             }
-            $insertSqlBase = "INSERT INTO $table (" . implode(",", $cols) . ") VALUES ";
+            $insertSqlBase = "INSERT INTO $realDestinationTable (" . implode(",", $insertCols) . ") VALUES ";
             $insertSql = $insertSqlBase;
-            $selectSql = "SELECT " . implode(",", $cols) . " FROM $table";
+            $selectSql = "SELECT " . implode(",", $selectCols) . " FROM $table";
             $rows = $sourceConnection->query($selectSql);
             $output->writeln('<comment>--- Transferring ' . $rows->rowCount() . ' rows</comment>');
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 foreach ($row as $key => &$val) {
+                   if ($params["column_transform"][$key]) {
+                       $val = $params["column_transform"][$key]($val);
+                   }
                    if ($val === null) {
                        $val = 'NULL';
                    } else {

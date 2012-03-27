@@ -18,8 +18,7 @@ class Yak extends Application
                 new \Yak\Command\Migration\Down(),
                 new \Yak\Command\Utility\Clear(),
                 new \Yak\Command\Utility\Execute(),
-                new \Yak\Command\DataTransfer\Transfer(),
-                new \Yak\Command\DataTransfer\Sync()
+                new \Yak\Command\DataTransfer\Transfer()
             )
         );
     }
