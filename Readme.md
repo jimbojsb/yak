@@ -4,7 +4,9 @@ Yak is a command-line database migration tool written in PHP and designed to int
 
 Installation
 ============
-Yak is distributed as an excutable Phar file with all of it's dependencies bundled. The easiest way to get Yak is to download the executable into your /usr/local/bin folder or equivalent.
+Yak is distributed as an excutable Phar file with all of it's dependencies bundled. Once you install it initally, the
+"update-yak" command can keep you up to date. To get your initial install, run the following command in the folder
+where you'd like Yak to be installed (I recommend /usr/local/bin):
 
 1. cd /usr/local/bin
 2. wget https://github.com/downloads/jimbojsb/yak/yak
