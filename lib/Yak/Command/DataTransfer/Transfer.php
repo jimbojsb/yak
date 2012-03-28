@@ -20,6 +20,7 @@ class Transfer extends AbstractDataTransfer
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->validateTargets();
         $source = $input->getArgument('source_connection');
         $destination = $input->getArgument('destination_connection');
         $transferConfigFile = $input->getArgument('transfer_config');

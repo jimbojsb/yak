@@ -9,5 +9,12 @@ use Symfony\Component\Console\Command\Command,
 
 class AbstractDataTransfer extends AbstractCommand
 {
-
+    protected function validateTargets()
+    {
+        $destination = $this->input->getArgument('destination_connection');
+        $destinationConfig = $this->config[$destination];
+        if ($destinationConfig['readonly'] == true) {
+            throw new \Exception("Cannot use a read-only target as a destination connection");
+        }
+    }
 }
