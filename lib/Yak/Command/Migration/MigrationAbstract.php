@@ -28,7 +28,7 @@ abstract class MigrationAbstract extends AbstractCommand
                 $description = $nameParts[1];
                 $contents = file_get_contents($fileName);
 
-                $migrationParts = preg_split('/--(up|down)/s', $contents);
+                $migrationParts = preg_split('/-- (up|down)/s', $contents);
                 if (count($migrationParts) == 2) {
                     $up = $migrationParts[1];
                     $down = null;
