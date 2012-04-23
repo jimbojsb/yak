@@ -57,7 +57,7 @@ abstract class AbstractCommand extends Command
             }
         }
 
-        $pdoDSN = "mysql:dbname=" . $config["dbname"] . ";host=" . $config["host"];
+        $pdoDSN = "mysql:dbname=" . $config["dbname"] . ";host=" . $config["host"] . ";charset=utf8";
         $pdo = new \PDO($pdoDSN, $config["username"], $config["password"]);
 
         if ($target) {
