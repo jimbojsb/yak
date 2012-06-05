@@ -1,5 +1,5 @@
 <?php
-namespace Yak\Application;
+namespace Yak;
 use \Symfony\Component\Console\Application,
     \Symfony\Component\Console\Input\InputInterface,
     \Symfony\Component\Console\Output\OutputInterface;
@@ -14,12 +14,13 @@ class Yak extends Application
 
         $this->addCommands(
             array(
-                new \Yak\Command\Migration\Up(),
-                new \Yak\Command\Migration\Down(),
-                new \Yak\Command\Utility\Clear(),
-                new \Yak\Command\Utility\Execute(),
-                new \Yak\Command\DataTransfer\Transfer(),
-                new \Yak\Command\UpdateYak()
+                new Command\Migration\Up(),
+                new Command\Migration\Down(),
+                new Command\Utility\Clear(),
+                new Command\Utility\Execute(),
+                new Command\DataTransfer\Sync(),
+                new Command\DataTransfer\Transfer(),
+                new Command\UpdateYak()
             )
         );
     }

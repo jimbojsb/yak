@@ -6,5 +6,5 @@ $loader->registerNamespace('Symfony', __DIR__ . '/../lib');
 $loader->registerNamespace('Yak', __DIR__ . '/../lib');
 $loader->register();
 
-$app = new Yak\Application\Yak();
+$app = new Yak\Application();
 $app->run();
