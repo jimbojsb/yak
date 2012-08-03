@@ -96,7 +96,7 @@ class Transfer extends AbstractDataTransfer
                 }
             }
 
-            $destinationConnection->query("TRUNCATE TABLE $table");
+            $destinationConnection->query("TRUNCATE TABLE $realDestinationTable");
             $destinationConnection->query("ALTER TABLE $table DISABLE KEYS");
 
 
@@ -135,7 +135,10 @@ class Transfer extends AbstractDataTransfer
             }
             if ($insertSql != $insertSqlBase) {
                 $insertSql = substr($insertSql, 0, strlen($insertSql) - 1);
-                $destinationConnection->query($insertSql);
+                $result = $destinationConnection->query($insertSql);
+                if (!$result) {
+                    throw new \Exception(print_r($destinationConnection->errorInfo(), true));
+                }
             }
             $destinationConnection->query("ALTER TABLE $table ENABLE KEYS");
         }
