@@ -19,11 +19,30 @@ class Clear extends UtilityAbstract
         $output->writeln('<info>Clearing your database...</info>');
         $pdo = $this->getConnection();
         $pdo->query("SET FOREIGN_KEY_CHECKS=0");
-        $stmt = $pdo->query("SHOW TABLES;");
+        $stmt = $pdo->query("SHOW FULL TABLES WHERE Table_type='BASE TABLE'");
         while ($table = $stmt->fetchColumn()) {
             $output->writeln("<info>Dropping table $table</info>");
             $pdo->query("DROP TABLE $table");
         }
+
+        $stmt = $pdo->query("SHOW FULL TABLES WHERE Table_type='VIEW'");
+        while ($view = $stmt->fetchColumn()) {
+            $output->writeln("<info>Dropping view $view</info>");
+            $pdo->query("DROP VIEW $view");
+        }
+
+        $stmt = $pdo->query("SHOW FUNCTION STATUS");
+        while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $output->writeln("<info>Dropping function " . $function["Name"] . "</info>");
+            $pdo->query("DROP FUNCTION " . $function["Name"]);
+        }
+
+        $stmt = $pdo->query("SHOW PROCEDURE STATUS");
+        while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $output->writeln("<info>Dropping procedure " . $function["Name"] . "</info>");
+            $pdo->query("DROP PROCEDURE " . $function["Name"]);
+        }
+
         $pdo->query("SET FOREIGN_KEY_CHECKS=1");
     }
 }
