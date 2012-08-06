@@ -10,5 +10,11 @@ use Symfony\Component\Console\Command\Command,
 
 abstract class UtilityAbstract extends AbstractCommand
 {
-
+    protected function validateTargets()
+    {
+        $destinationConfig = $this->config[$this->getTarget()];
+        if ($destinationConfig['readonly'] == true) {
+            throw new \Exception("Cannot use a read-only target");
+        }
+    }
 }

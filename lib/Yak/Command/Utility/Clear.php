@@ -16,6 +16,7 @@ class Clear extends UtilityAbstract
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->validateTargets();
         $output->writeln('<info>Clearing your database...</info>');
         $pdo = $this->getConnection();
         $pdo->query("SET FOREIGN_KEY_CHECKS=0");

@@ -18,6 +18,7 @@ class Execute extends UtilityAbstract
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->validateTargets();
         $path = $input->getArgument('path');
         if (!$path) {
             $path = realpath(getcwd());
