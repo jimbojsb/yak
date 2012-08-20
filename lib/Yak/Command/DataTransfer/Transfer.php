@@ -41,7 +41,6 @@ class Transfer extends AbstractDataTransfer
         if (!is_array($transferConfig)) {
             throw new \Exception('Error loading transfer config file');
         }
-
         $output->writeln('<info>Found ' . count($transferConfig["tables"]) . ' tables to transfer</info>');
         foreach ($transferConfig["tables"] as $table => $params) {
 
@@ -109,6 +108,10 @@ class Transfer extends AbstractDataTransfer
             $insertSqlBase = "INSERT INTO $realDestinationTable (" . implode(",", $insertCols) . ") VALUES ";
             $insertSql = $insertSqlBase;
             $selectSql = "SELECT " . implode(",", $selectCols) . " FROM $table";
+            if ($params["where"]) {
+                $selectSql .= " " . $params["where"];
+            }
+
             $rows = $sourceConnection->query($selectSql);
             $output->writeln('<comment>--- Transferring ' . $rows->rowCount() . ' rows</comment>');
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
