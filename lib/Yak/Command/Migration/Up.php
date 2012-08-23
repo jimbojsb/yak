@@ -46,7 +46,11 @@ class Up extends MigrationAbstract
             $pdo = $this->getConnection();
             for ($c = $currentVersion + 1; $c <= $upgradeVersion; $c++) {
                 $data = $migrations[$c];
-                $stmt = $pdo->query($data['up']);
+                if ($data) {
+                    $stmt = $pdo->query($data['up']);
+                } else {
+                    continue;
+                }
                 if ($stmt) {
                     $stmt->closeCursor();
                     unset($stmt);
