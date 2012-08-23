@@ -44,7 +44,12 @@ class Down extends MigrationAbstract
             $pdo = $this->getConnection();
             for ($c = $currentVersion; $c > $downgradeVersion; $c--) {
                 $data = $migrations[$c];
-                $pdo->query("SET FOREIGN_KEY_CHECKS=0");
+                if ($data) {
+                    $pdo->query("SET FOREIGN_KEY_CHECKS=0");
+                } else {
+                    continue;
+                }
+
                 $stmt = $pdo->query($data['down']);
                 if ($stmt) {
                     unset($stmt);
