@@ -50,20 +50,20 @@ class Down extends MigrationAbstract
                     continue;
                 }
 
-                $stmt = $pdo->query($data['down']);
-                if ($stmt) {
-                    unset($stmt);
-                    $sql = "DELETE FROM yak_version
-                            WHERE version='$c'";
-                    $stmt = $pdo->query($sql);
-                    if ($stmt) {
-                        $stmt->closeCursor();
-                    }
-                } else {
+                try {
+                    $this->multiQuery($data['down']);    
+                } catch (\Exception $e) {
                     $output->writeln('<error>Tried to run your down command, but nothing happened...</error>');
+                    throw $e;
+                }
+                
+                $sql = "DELETE FROM yak_version
+                        WHERE version='$c'";
+                $stmt = $pdo->query($sql);
+                if ($stmt) {
+                    $stmt->closeCursor();
                 }
                 $pdo->query("SET FOREIGN_KEY_CHECKS=1");
-
             }
         }
     }

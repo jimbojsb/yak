@@ -72,4 +72,21 @@ abstract class MigrationAbstract extends AbstractCommand
         $version = $stmt->fetchColumn();
         return $version ?: 0;
     }
+
+    protected function multiQuery($sqlQueries)
+    {
+        $pdo = $this->getConnection();
+        $queries = preg_split('/[.+;][\s]*\n/', $sqlQueries, -1, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($queries as $sql) {
+            $stmt = $pdo->query($sql);
+            if (!$stmt) {
+                throw new \Exception(print_r($pdo->errorInfo(), true));
+            }
+        }
+
+        if ($stmt) {
+            $stmt->closeCursor();
+        }
+    }
 }

@@ -47,25 +47,19 @@ class Up extends MigrationAbstract
             for ($c = $currentVersion + 1; $c <= $upgradeVersion; $c++) {
                 $data = $migrations[$c];
                 if ($data) {
-                    $stmt = $pdo->query($data['up']);
+                    $this->multiQuery($data['up']);
                 } else {
                     continue;
                 }
+                $checksum = $data['checksum'];
+                $description = $data['description'];
+                $output->writeln("<info>Applying $c: $description...</info>");
+                $date = date("YmdHis");
+                $sql = "INSERT INTO yak_version
+                        VALUES ('$c', '$description', '$checksum', '$date')";
+                $stmt = $pdo->query($sql);
                 if ($stmt) {
                     $stmt->closeCursor();
-                    unset($stmt);
-                    $checksum = $data['checksum'];
-                    $description = $data['description'];
-                    $output->writeln("<info>Applying $c: $description...</info>");
-                    $date = date("YmdHis");
-                    $sql = "INSERT INTO yak_version
-                            VALUES ('$c', '$description', '$checksum', '$date')";
-                    $stmt = $pdo->query($sql);
-                    if ($stmt) {
-                        $stmt->closeCursor();
-                    }
-                } else {
-                    throw new \Exception(print_r($pdo->errorInfo(), true));
                 }
             }
         }
