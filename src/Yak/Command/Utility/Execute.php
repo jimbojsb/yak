@@ -7,13 +7,16 @@ use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface;
 
+use Yak\SqlString;
+
 class Execute extends UtilityAbstract
 {
     protected function configure()
     {
         $this->setName('execute')
              ->setDescription('executes a single SQL script or a folder full of scripts')
-             ->addArgument('path', InputArgument::OPTIONAL, 'Path to SQL script or directory');
+             ->addArgument('path', InputArgument::OPTIONAL, 'Path to SQL script or directory')
+             ->addOption('continue', null, InputOption::VALUE_NONE, 'Continue executing queries even if one fails');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -61,19 +64,25 @@ class Execute extends UtilityAbstract
 
         $pdo = $this->getConnection();
         foreach ($files as $file) {
-            $result = $pdo->query(file_get_contents($file));
-            if (!$result) {
-                $output->writeln("<error>Encountered an error running $file</error>");
-                $errorMessages = $pdo->errorInfo();
-                foreach ($errorMessages as $message) {
-                    $output->writeln("<error>\t$message</error>");
+            $sql = SqlString::fromFile($file);
+            $queries = $sql->getQueries();
+            $output->write("<info>Executing $file</info>");
+            foreach ($queries as $query) {
+                try {
+                    $result = $pdo->query($query);
+                    $result->closeCursor();
+                    $output->write("<info>.</info>");
+                } catch (\PDOException $e) {
+                    $output->writeln("");
+                    $output->writeln("<error>Encountered an error running $file</error>");
+                    $output->writeln("<error>$query</error>");
+                    $output->writeln("<error>" . $e->getMessage() . "</error>");
+                    if (!$input->getOption('continue')) {
+                        throw new \Exception("Halting due to SQL errors. To ignore, re-run with --continue flag");
+                    }
                 }
-
-            } else {
-                $result->closeCursor();
-                $output->writeln('<info>Executed ' . $file . '</info>');
             }
-
+            $output->writeln('<info>  done.</info>');
         }
     }
 }

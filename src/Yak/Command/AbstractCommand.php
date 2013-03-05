@@ -2,9 +2,7 @@
 namespace Yak\Command;
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface;
+    Symfony\Component\Console\Input\InputOption;
 
 abstract class AbstractCommand extends Command
 {
@@ -37,7 +35,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return PDO
+     * @return \PDO
      */
     protected function getConnection($config = null)
     {
@@ -59,6 +57,8 @@ abstract class AbstractCommand extends Command
 
         $pdoDSN = "mysql:dbname=" . $config["dbname"] . ";host=" . $config["host"] . ";charset=utf8";
         $pdo = new \PDO($pdoDSN, $config["username"], $config["password"]);
+        $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, 1);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         if ($target) {
             $this->connections[$target] = $pdo;
@@ -69,9 +69,13 @@ abstract class AbstractCommand extends Command
 
 
 
+
     public function getTarget()
     {
         $target = $this->input->getOption('target') ?: getenv('YAK_TARGET') ?: getenv('APPLICATION_ENV') ?: $this->getDefaultTarget();
+        if (!$target) {
+            throw new \Exception("Attempted to get a connection target but couldn't find one");
+        }
         return $target;
     }
 

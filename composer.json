@@ -1,0 +1,23 @@
+{
+    "name": "jimbojsb/yak",
+    "description": "Database migrations and sync tools for PHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Butts",
+            "email": "josh@joshbutts.com",
+            "role": "developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Yak": "src/"
+        }
+    },
+    "require": {
+        "symfony/console": "2.1.*"
+    },
+    "bin": [
+        "bin/yak"
+    ]
+}

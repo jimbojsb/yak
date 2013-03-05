@@ -6,13 +6,17 @@ use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface;
 
+use Yak\SqlString;
+
 class Up extends MigrationAbstract
 {
     protected function configure()
     {
         $this->setName('up')
              ->setDescription('upgrades your database schema to the latest version available')
-             ->addArgument('version', InputArgument::OPTIONAL, 'set a specific version number to upgrade to');;
+             ->addArgument('version', InputArgument::OPTIONAL, 'set a specific version number to upgrade to')
+             ->addOption('continue', null, InputOption::VALUE_NONE, 'Continue executing queries even if one fails');
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -45,27 +49,34 @@ class Up extends MigrationAbstract
         } else {
             $pdo = $this->getConnection();
             for ($c = $currentVersion + 1; $c <= $upgradeVersion; $c++) {
+
                 $data = $migrations[$c];
-                if ($data) {
-                    $stmt = $pdo->query($data['up']);
-                } else {
-                    continue;
+                $checksum = $data['checksum'];
+                $description = $data['description'];
+                $output->writeln("<info>Applying $c: $description...</info>");
+
+                $sql = new SqlString($data['up']);
+                $queries = $sql->getQueries();
+
+                foreach ($queries as $query) {
+                    try {
+                        $stmt = $pdo->query($query);
+                        $stmt->closeCursor();
+                        unset($stmt);
+                    } catch (\PDOException $e) {
+                        if (!$input->getOption('continue')) {
+                            throw $e;
+                        }
+                    }
+
                 }
+
+                $date = date("YmdHis");
+                $sql = "INSERT INTO yak_version
+                        VALUES ('$c', '$description', '$checksum', '$date')";
+                $stmt = $pdo->query($sql);
                 if ($stmt) {
                     $stmt->closeCursor();
-                    unset($stmt);
-                    $checksum = $data['checksum'];
-                    $description = $data['description'];
-                    $output->writeln("<info>Applying $c: $description...</info>");
-                    $date = date("YmdHis");
-                    $sql = "INSERT INTO yak_version
-                            VALUES ('$c', '$description', '$checksum', '$date')";
-                    $stmt = $pdo->query($sql);
-                    if ($stmt) {
-                        $stmt->closeCursor();
-                    }
-                } else {
-                    throw new \Exception(print_r($pdo->errorInfo(), true));
                 }
             }
         }

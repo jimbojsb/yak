@@ -11,7 +11,7 @@ class Clear extends UtilityAbstract
     protected function configure()
     {
         $this->setName('clear')
-             ->setDescription('completely removes all tables in your database');
+             ->setDescription('completely removes all tables, functions, procedures, and views from your database');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

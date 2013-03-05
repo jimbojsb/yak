@@ -1,3 +1,2 @@
 .idea
-*.phar
-yak-*
+vendor/
