@@ -32,16 +32,16 @@ class Clear extends UtilityAbstract
             $pdo->query("DROP VIEW $view");
         }
 
-        $stmt = $pdo->query("SHOW FUNCTION STATUS");
+        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_SCHEMA = DATABASE()");
         while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $output->writeln("<info>Dropping function " . $function["Name"] . "</info>");
-            $pdo->query("DROP FUNCTION " . $function["Name"]);
+            $output->writeln("<info>Dropping function " . $function["SPECIFIC_NAME"] . "</info>");
+            $pdo->query("DROP FUNCTION " . $function["SPECIFIC_NAME"]);
         }
 
-        $stmt = $pdo->query("SHOW PROCEDURE STATUS");
+        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_SCHEMA = DATABASE()");
         while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $output->writeln("<info>Dropping procedure " . $function["Name"] . "</info>");
-            $pdo->query("DROP PROCEDURE " . $function["Name"]);
+            $output->writeln("<info>Dropping procedure " . $function["SPECIFIC_NAME"] . "</info>");
+            $pdo->query("DROP PROCEDURE " . $function["SPECIFIC_NAME"]);
         }
 
         $pdo->query("SET FOREIGN_KEY_CHECKS=1");
