@@ -1,5 +1,5 @@
 {
-    "hash": "ca81e7316ccffd0beeb6e0981bba12f5",
+    "hash": "fb3a80380575c1796dbf24477df48121",
     "packages": [
         {
             "name": "symfony/console",
@@ -19,7 +19,6 @@
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2013-01-17 15:20:05",
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -41,7 +40,8 @@
                 }
             ],
             "description": "Symfony Console Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "2013-01-17 15:20:05"
         }
     ],
     "packages-dev": null,
@@ -50,6 +50,12 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": [
+
+    ],
+    "platform": [
+
+    ],
+    "platform-dev": [
 
     ]
 }
