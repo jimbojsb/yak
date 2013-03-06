@@ -32,13 +32,14 @@ class Clear extends UtilityAbstract
             $pdo->query("DROP VIEW $view");
         }
 
-        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_SCHEMA = DATABASE()");
+        $dbName = $this->getConfig();
+        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_SCHEMA = '" . $dbName['dbname'] . "'");
         while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $output->writeln("<info>Dropping function " . $function["SPECIFIC_NAME"] . "</info>");
             $pdo->query("DROP FUNCTION " . $function["SPECIFIC_NAME"]);
         }
 
-        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_SCHEMA = DATABASE()");
+        $stmt = $pdo->query("SELECT SPECIFIC_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_SCHEMA = '" . $dbName['dbname'] . "'");
         while ($function = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $output->writeln("<info>Dropping procedure " . $function["SPECIFIC_NAME"] . "</info>");
             $pdo->query("DROP PROCEDURE " . $function["SPECIFIC_NAME"]);
