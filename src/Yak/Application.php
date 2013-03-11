@@ -10,7 +10,7 @@ class Application extends ConsoleApplication
 
     public function __construct()
     {
-        parent::__construct('Yak Database Migrations', '0.5.2');
+        parent::__construct('Yak Database Migrations', '0.5.3');
         $this->addCommands(
             array(
                 new \Yak\Command\Migration\Up(),

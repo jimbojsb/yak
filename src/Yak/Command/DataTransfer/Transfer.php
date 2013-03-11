@@ -114,10 +114,11 @@ class Transfer extends AbstractDataTransfer
 
             $rows = $sourceConnection->query($selectSql);
             $output->writeln('<comment>--- Transferring ' . $rows->rowCount() . ' rows</comment>');
+            $expectedRowCount = 0;
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 foreach ($row as $key => &$val) {
                    if ($params["column_transform"][$key]) {
-                       $val = $params["column_transform"][$key]($val);
+                       $val = $params["column_transform"][$key]($val, $row);
                    }
                    if ($val === null) {
                        $val = 'NULL';
@@ -127,11 +128,23 @@ class Transfer extends AbstractDataTransfer
                 }
                 $vals = array_values($row);
                 $rowData = "(" . implode(",", $vals) . ")";
+
                 if (strlen($insertSql) + strlen($rowData) + 1 < $maxPacket) {
+                    $expectedRowCount++;
                     $insertSql .= $rowData . ",";
                 } else {
                     $insertSql = substr($insertSql, 0, strlen($insertSql) - 1);
-                    $destinationConnection->query($insertSql);
+                    $result = $destinationConnection->query($insertSql);
+                    if (!$result) {
+                        throw new \Exception(print_r($destinationConnection->errorInfo(), true));
+                    }
+                    if ($result->rowCount() != $expectedRowCount) {
+                        throw new \Exception("Expected to see $expectedRowCount inserted, only saw ". $result->rowCount());
+                    } else {
+                        $output->writeln('<comment>---- Bulk inserted ' . $result->rowCount() . ' rows</comment>');
+                    }
+                    $expectedRowCount = 0;
+                    $expectedRowCount++;
                     $insertSql = $insertSqlBase;
                     $insertSql .= $rowData . ",";
                 }
@@ -140,7 +153,11 @@ class Transfer extends AbstractDataTransfer
                 $insertSql = substr($insertSql, 0, strlen($insertSql) - 1);
                 $result = $destinationConnection->query($insertSql);
                 if (!$result) {
+
                     throw new \Exception(print_r($destinationConnection->errorInfo(), true));
+                }
+                if ($result->rowCount() != $expectedRowCount) {
+                    throw new \Exception("Expected to see $expectedRowCount inserted, only saw ". $result->rowCount());
                 }
             }
             $destinationConnection->query("ALTER TABLE $table ENABLE KEYS");
