@@ -96,7 +96,7 @@ class Transfer extends AbstractDataTransfer
             }
 
             $destinationConnection->query("TRUNCATE TABLE $realDestinationTable");
-            $destinationConnection->query("ALTER TABLE $table DISABLE KEYS");
+            $destinationConnection->query("ALTER TABLE $realDestinationTable DISABLE KEYS");
 
 
             $selectCols = array();
@@ -160,7 +160,7 @@ class Transfer extends AbstractDataTransfer
                     throw new \Exception("Expected to see $expectedRowCount inserted, only saw ". $result->rowCount());
                 }
             }
-            $destinationConnection->query("ALTER TABLE $table ENABLE KEYS");
+            $destinationConnection->query("ALTER TABLE $realDestinationTable ENABLE KEYS");
         }
         $destinationConnection->query("SET FOREIGN_KEY_CHECKS=1");
     }
