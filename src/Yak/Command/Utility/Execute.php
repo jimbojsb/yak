@@ -16,7 +16,8 @@ class Execute extends UtilityAbstract
         $this->setName('execute')
              ->setDescription('executes a single SQL script or a folder full of scripts')
              ->addArgument('path', InputArgument::OPTIONAL, 'Path to SQL script or directory')
-             ->addOption('continue', null, InputOption::VALUE_NONE, 'Continue executing queries even if one fails');
+             ->addOption('continue', null, InputOption::VALUE_NONE, 'Continue executing queries even if one fails')
+             ->addOption('raw', null, InputOption::VALUE_NONE, "Don't try and parse the contents of the file into multiple queries");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -64,8 +65,13 @@ class Execute extends UtilityAbstract
 
         $pdo = $this->getConnection();
         foreach ($files as $file) {
-            $sql = SqlString::fromFile($file);
-            $queries = $sql->getQueries();
+            if ($input->getOption('raw')) {
+                $queries = array(file_get_contents($file));
+            } else {
+                $sql = SqlString::fromFile($file);
+                $queries = $sql->getQueries();
+            }
+
             $output->write("<info>Executing $file</info>");
             foreach ($queries as $query) {
                 try {
