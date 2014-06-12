@@ -15,7 +15,7 @@
         }
     },
     "require": {
-        "symfony/console": "2.1.*"
+        "symfony/console": "2.*"
     },
     "bin": [
         "bin/yak"
