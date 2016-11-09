@@ -3,6 +3,8 @@ namespace Yak\Command;
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractCommand extends Command
 {
@@ -17,7 +19,7 @@ abstract class AbstractCommand extends Command
         $this->addOption('target', 't', InputOption::VALUE_OPTIONAL, 'target connection from config file');
     }
 
-    public function initialize($input, $output)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
         $this->config = $this->getConfig();
